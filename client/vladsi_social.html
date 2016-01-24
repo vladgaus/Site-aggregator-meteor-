@@ -1,0 +1,339 @@
+<head>
+	<title>Social aggregator</title>
+</head>
+<body></body>
+  
+<template name="SocialMain">
+	{{> yield "nav"}}
+	{{> yield "content"}}
+</template>  
+
+<template name="nav">
+	{{#if isAuthorize}}
+	<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="/"><span>Social</span> Aggregator</a>
+			</div>
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav navbar-left common_info">
+					<li>All sites ({{count_sites}})</li>
+					<li>All users ({{count_users}})</li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li>{{> loginButtons}}</li>
+					<li class="fsearch hidden-xs"><a class="glyphicon glyphicon-search"></a></li>
+				</ul>
+			</div>
+			<ul class="nav navbar-nav navbar-right nav-search visible-xs">
+				<li class="fsearch"><a class="btn-search"></a></li>
+			</ul>
+		</div>
+	</nav>
+	{{/if}}
+</template>    
+<template name="content">
+	<!-- -->
+	{{#if isAuthorize}}
+
+	<div class="modal fade" id="site_add_form">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<div class="modal-title">Add site to aggregator</div>
+				</div>
+				<div class="modal-body">       
+					<form class="js-add-image">
+						<input type="text" class = "form-control" id = "url" placeholder = "http://youtube.com" />
+					</form> 
+					<br/>
+					{{#if siteExists}}
+					<div class="alert alert-danger" role="alert">
+						<span class="sr-only">Error:</span>
+						This link already exists <a href = "/site/{{exists_site_id}}">see</a>
+					</div>
+					{{/if}}
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-success js-add-site">Add</button>
+					<button class="btn btn-warning js-close" data-dismiss="modal">Cancel</button>
+				</div>  
+			</div>
+		</div>
+	</div>
+	
+	
+	
+	
+	
+	
+	<div id="searchbox">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+           
+              <div class="form-group">
+                <label for="inputSearch" class="sr-only">Search</label>
+                <input type="text" class="form-control input-lg js-search" placeholder="Write, what you search and press Enter">
+              </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="content">
+      <div class="container">
+        
+		<button type="button" class="btn btn-info add-site js-add-site-form">Add site</button>
+		
+		
+		
+		<div class="row container-gallery">
+		
+			{{#each sites_last}}
+				<div class="col-md-3 col-sm-6 col-xs-12 site_block">
+				
+					<div class="post-container">
+						
+					  <div class="post-image">
+						<a href="/site/{{_id}}" class="img-group-gallery js-detail" title="{{title}}"><img src="{{#if image}}{{image}}{{else}}def.jpg{{/if}}" class="img-responsive" alt="{{title}}"></a>
+					  </div>
+					  <div class="post-meta">
+						<h2 class = "site_title">{{title}}</h2>
+						<ul class="list-meta list-inline js-desc">
+						  <li><i class="glyphicon glyphicon-thumbs-up can_ch js-like" data-site = "{{_id}}" data-rating = "{{id_rating _id}}"></i> {{count_likes _id}}</li>
+						  <li><i class="glyphicon glyphicon-thumbs-down can_ch js-unlike" data-site = "{{_id}}" data-rating = "{{id_rating _id}}"></i> {{count_unlikes _id}}</li>
+						  <li><i class="glyphicon glyphicon-eye-open"></i> {{c_view}}</li>
+						  <li><i class="glyphicon glyphicon-comment"></i> {{c_comments}}</li>
+						</ul>
+					  </div>
+					  {{#if tags}}
+					 <div class="post-desc">
+						<i class="glyphicon glyphicon-tags fa fa-tags"></i> <strong>Tags</strong> : {{tags}}
+					  </div>
+					 {{/if}}
+					</div>
+				  </div>
+			{{/each}}
+        </div>
+		
+		
+		<div class="col-md-12 col-sm-6 col-xs-12 line_info">
+			<div class="post-container">
+				<div class="post-meta">
+					<div class="btn-group" role="group" aria-label="...">
+					  <button type="button" class="btn btn-default act" data-sort = "rating">rating</button>
+					  <button type="button" class="btn btn-default" data-sort = "viwes">count viwes</button>
+					  <button type="button" class="btn btn-default" data-sort = "comments">count comments</button>
+					  <button type="button" class="btn btn-default" data-sort = "date">date created</button>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+		
+		<div class="row container-gallery">
+		
+			{{#each sites}}
+				<div class="col-md-3 col-sm-6 col-xs-12 site_block">
+				
+				{{#if is_my createdBy}}
+				<span class = "del_site" data-id = "{{_id}}"></span>
+				{{/if}}
+				
+					<div class="post-container">
+		 
+					  <div class="post-image">
+						<a href="/site/{{_id}}" class="img-group-gallery js-detail" title="{{title}}"><img src="{{#if image}}{{image}}{{else}}def.jpg{{/if}}" class="img-responsive" alt="{{title}}"></a>
+					  </div>
+					  <div class="post-meta">
+						<h2 class = "site_title">{{title}}</h2>
+						<ul class="list-meta list-inline js-desc">
+						  <li><i class="glyphicon glyphicon-thumbs-up can_ch js-like" data-site = "{{_id}}" data-rating = "{{id_rating _id}}"></i> {{count_likes _id}}</li>
+						  <li><i class="glyphicon glyphicon-thumbs-down can_ch js-unlike" data-site = "{{_id}}" data-rating = "{{id_rating _id}}"></i> {{count_unlikes _id}}</li>
+						  <li><i class="glyphicon glyphicon-eye-open"></i> {{c_view}}</li>
+						  <li><i class="glyphicon glyphicon-comment"></i> {{c_comments}}</li>
+						</ul>
+					  </div>
+					  {{#if tags}}
+					 <div class="post-desc">
+						<i class="glyphicon glyphicon-tags fa fa-tags"></i> <strong>Tags</strong> : {{tags}}
+					  </div>
+					 {{/if}}
+					</div>
+				  </div>
+			{{/each}}
+        </div>
+      </div>
+    </div>
+	{{else}}
+	<div class="container welcome">
+		<h1>Welcome to Social aggregator</h1>
+		<p>(Here you can add some sites, discuss with another people. Enjoy.)</p>
+		{{> loginButtons}}
+	</div>
+	{{/if}}
+	<!-- -->
+</template>
+<template name="detail">
+	<!-- -->
+	{{#if isAuthorize}}
+		<div id="content">
+      <div class="container">
+        <div class="row">
+     
+
+          <div class="contaner">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="post-container">
+                  <div class="post-content">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="detail-meta">
+                          <span><em>by</em> {{get_author_name createdBy}}</span>
+                          <span><em>{{format_date createdOn}}</em></span>
+                          <span>({{count_comments _id}} comment(s))</span>
+                        </div>
+                        <div class="detail-heading-title">
+                          <h2>{{title}}</h2>
+                        </div>
+
+                        <img src="{{#if image}}{{image}}{{else}}def.jpg{{/if}}" class="img-responsive js-detail" alt="{{title}}" data-view = "{{c_view}}">
+						<br/>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="post-container">
+                  <div class="post-content">
+                    <div class="heading-title">
+                      <h3>Description</h3>
+                    </div>
+
+                    <p>{{description}}</p>
+					
+					
+					<div class="heading-title">
+                      <h3>Link</h3>
+					  <p>{{url}}</p>
+                    </div>
+
+                    
+					
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-12">
+                <div class="post-container">
+                  <div class="post-content">
+                    <div class="heading-title">
+                      <h3>{{count_comments _id}} comment(s) on this page</h3>
+                    </div>
+
+                   
+                    <div class="comments">
+                      <ul>
+						{{#each comments}}
+							<li>
+							  <div class="comment-container">
+								<div class="comment-meta">
+								  
+								  <span class="comment-author">{{get_author_name createdBy}}</span>
+								  <span class="comment-date">{{format_date createdOn}}</span>
+								</div>
+								<div class="comment-text">
+								  <p class = "pre">{{text}}</p>
+								</div>
+							  </div>
+
+							</li>
+						{{/each}}
+
+                      </ul>
+                    </div>
+                  
+                    <div class="post-comment">
+                      <div class="heading-title">
+                        <h3>Post Comment</h3>
+                      </div> 
+
+                      <form role="form">
+                        <div class="form-group">
+                          <label for="comment" class="sr-only">Comment</label>
+                          <textarea class="form-control js-comment" rows="5" placeholder="Write your comment here"></textarea>
+                        </div>
+                        <button type="button" class="btn btn-primary js-add-comment" data-urlid = "{{_id}}">Add comment</button>
+                      </form>
+                    </div>
+                   
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+
+          </div>
+          
+          
+        </div>
+      </div>
+    </div>
+
+
+  
+  
+  <div class="footer">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+			<h2>Similar sites</h2>
+            <hr>
+          </div>
+        </div>
+        <div class="row">
+				
+				
+				<div class="row container-gallery">
+					{{#each similar_sites}}
+					  <div class="col-md-3 col-sm-6 col-xs-12">
+						<div class="post-container">
+			 
+						  <div class="post-image">
+						<a href="/site/{{_id}}" class="img-group-gallery js-detail" title="{{title}}"><img src="{{#if image}}{{image}}{{else}}def.jpg{{/if}}" class="img-responsive" alt="{{title}}"></a>
+					  </div>
+					  <div class="post-meta">
+						<h2 class = "site_title">{{title}}</h2>
+						<ul class="list-meta list-inline js-desc">
+						  <li><i class="glyphicon glyphicon-thumbs-up can_ch js-like" data-site = "{{_id}}" data-rating = "{{id_rating _id}}"></i> {{count_likes _id}}</li>
+						  <li><i class="glyphicon glyphicon-thumbs-down can_ch js-unlike" data-site = "{{_id}}" data-rating = "{{id_rating _id}}"></i> {{count_unlikes _id}}</li>
+						  <li><i class="glyphicon glyphicon-eye-open"></i> {{c_view}}</li>
+						  <li><i class="glyphicon glyphicon-comment"></i> {{c_comments}}</li>
+						</ul>
+					  </div>
+						 
+						</div>
+					  </div>
+					{{/each}}
+				</div>
+        </div>
+      </div>
+    </div>
+	{{/if}}
+	<!-- -->
+</template>
